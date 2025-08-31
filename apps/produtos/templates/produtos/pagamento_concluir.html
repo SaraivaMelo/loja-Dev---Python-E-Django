@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container div_pagar">
+    <h2>Escolha a forma de pagamento</h2>
+<form method="POST" action="{% url 'produtos:concluir_pagamento' %}" id="form_pagamento">
+    {% csrf_token %}
+        <div class="box_info">
+            <div class="info_data_pg">
+                <div  class="fs-5">
+                    Valor a pagar: R$ {{ total_com_desconto }}
+                </div>
+                <div  class="fs-5">
+                    Desconto aplicado: R$ {{  desconto }}
+                </div>
+                <div  class="fs-5" >
+                    Pontuação atual: <span id="pontuacao_atual">{{ pontos }}</span>
+                </div>
+            </div>
+            <div class="info_form_pg">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" value="boleto">
+                    <label class="form-check-label" for="boleto">
+                    Boleto
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" value="pix" >
+                    <label class="form-check-label" for="pix">
+                    Pix
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" value="cartao" >
+                    <label class="form-check-label" for="cartao">
+                    Cartão
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" value="pontos" disabled id="pg_pontos" >
+                    <label class="form-check-label" for="pontos" >
+                    Usar pontuação
+                    </label>
+                </div>
+            </div>
+        </div>
+
+            <div>
+                <!-- Gerar dados para o pagamento cartão -->
+                <div id="pg_cartao" >
+                        <div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="cc-name" class="form-label">Nome do Cartão</label>
+                                    <input type="text" class="form-control" id="cc-name" placeholder="">
+                                    <small class="text-muted">Digite o nome conforme informado no cartão</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="cc-number" class="form-label">Número do Cartão</label>
+                                        <input type="text" class="form-control" id="cc-number" placeholder="0000 0000 0000 0000">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="cc-expiration" class="form-label">Validade do Cartão</label>
+                                        <input type="text" class="form-control" id="cc-expiration" placeholder="mm/YY">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="cc-cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cc-cvv" placeholder="000">
+                                    </div>
+                            </div>
+                        </div>
+                </div>
+                <!-- Gerar dados para o pagamento pix -->
+                <div id="pg_pix">   
+                    <div class="qrCodePix">
+                        <img src="{% static 'produtos/img/qrcode.png' %}" class="card-img-top" alt="Sem imagem">
+                        <button class="btn btn-primary mt-3">tS1wbE10S63gGs8@teD</button>
+                    </div>
+                </div>
+
+                <!-- Gerar dados para o pagamento boleto -->
+                <div id="pg_boleto">   
+                    <div class="boleto">
+                        <img src="{% static 'produtos/img/boleto.png' %}" class="card-img-top" alt="Sem imagem">
+                        <small class="codigo_boleto">20082205403753507191438333321470</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading spinner (escondido por padrão) -->
+            <div id="loading" style="display:none;">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Modal de Sucesso -->
+                <div class="modal fade" id="paymentSuccessModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="successModalLabel">Pagamento Concluído</h5>
+                            </div>
+                            <div class="modal-body">
+                                Pagamento realizado com sucesso!
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            <input type="hidden" name="forma_pagamento" id="forma_pagamento" value="">
+
+        <div class="box_info">
+            <button type="submit" class="btn btn-primary concluir_compra" id="concluir_compra" disabled >Concluir Compra</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'produtos/js/produto.js' %}"></script>
+{% endblock %}

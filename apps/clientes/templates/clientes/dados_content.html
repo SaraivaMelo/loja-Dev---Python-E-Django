@@ -1,0 +1,43 @@
+<h2>Minhas Informações</h2>
+<form method="POST" action="{% url 'clientes:atualizar_dados' %}" id="form-cadastro">
+    {% csrf_token %}
+
+    <div class="row mt-4">
+        <div class="col">
+            <label for="name">Nome</label>
+            <input type="text" name="name" class="form-control" id="name" value="{{ user.first_name }}" disabled>
+        </div>
+          <div class="col">
+            <label for="phone">Telefone</label>
+            <input type="text" name="phone" class="form-control" id="phone" value="{{ profile.phone }}" disabled>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col">
+            <label for="cep">CEP</label>
+            <input type="text" name="cep" class="form-control" id="cep" value="{{ profile.address.cep }}" disabled>
+        </div>
+          <div class="col">
+            <label for="street">Rua</label>
+            <input type="text" name="street" class="form-control" id="street" value="{{ profile.address.street }}" disabled>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <label for="neighborhood">Bairro</label>
+            <input type="text" name="neighborhood" class="form-control" id="neighborhood" value="{{ profile.address.neighborhood }}" disabled>
+        </div>
+          <div class="col">
+            <label for="city">Cidade</label>
+            <input type="text" name="city" class="form-control" id="city" value="{{ profile.address.city }}" disabled>
+        </div>
+    </div>
+
+
+    <div class="mt-3">
+        <button type="button" class="btn btn-warning" id="btn-editar">Editar</button>
+        <button type="submit" class="btn btn-success d-none" id="btn-salvar">Salvar</button>
+        <button type="button" class="btn btn-secondary d-none" id="btn-cancelar">Cancelar</button>
+    </div>
+</form> 

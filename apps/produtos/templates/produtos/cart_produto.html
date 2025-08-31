@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %} Carrinho de Compras {% endblock %}
+{% block content %}
+
+<h1 class="mb-4">
+   Carrinho - Detalhes da compra 
+</h1>
+<div class="container d-flex">
+    <div class="flex-grow-1 me-4">
+        {% include "produtos/cart_form.html" %}
+    </div>
+    <div class="border p-3" style="width: 300px; d-flex justify-content-center">
+        {% include "produtos/cart_check.html" %}
+    </div>
+{% endblock %}
+

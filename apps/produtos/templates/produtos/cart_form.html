@@ -1,0 +1,27 @@
+    {% load static %}
+    <div class="d-flex mb-4">
+        <div class="card card_img" style="width: 18rem;">
+            {% if produto.image %}
+                <img src="{{ produto.image.url }}" class="card-img-top produto-img-card"  alt="Imagem de {{ produto.name }}">
+            {% else %}
+                <img src="{% static 'img/sem-imagem.png' %}" class="card-img-top" alt="Sem imagem">
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-around  flex-column ms-3 ">
+            <h3>{{ produto.name }}</h3>
+            <p class="fs-6">{{ produto.description }}</p>
+            <p class="fs-5">Preço: R$ {{ produto.price }}</p>
+            <p class="fs-5">Categoria: {{ produto.categorie.name }}</p>
+        </div>
+    </div>
+    
+    <form method="post" id="form-adicionar-carrinho"
+        data-url="{% url 'produtos:kart_adicionar' produto.id %}"
+        data-url-finalizar="{% url 'produtos:finalizar' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Adicionar ao carrinho</button>
+    </form>
+
+{% block extra_js %}
+    <script src="{% static 'produtos/js/produto.js' %}"></script>
+{% endblock %}

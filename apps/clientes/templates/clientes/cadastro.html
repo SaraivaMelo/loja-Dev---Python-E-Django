@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="col-md">
+    <h2>Seja bem vindo!</h2>
+    <p>Preencha os campos abaixo para realizar seu cadastro</p>
+</div> 
+
+{% include "clientes/form_cadastro_cliente.html" %}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'clientes/js/api_cep.js' %}"></script>
+    <script src="{% static 'clientes/js/script.js' %}"></script>
+{% endblock %}

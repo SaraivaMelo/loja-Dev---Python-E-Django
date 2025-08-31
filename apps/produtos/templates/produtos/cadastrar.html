@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'produtos/css/produto.css' %}">
+{% endblock %}
+
+{% block title %} Cadastrar Produto {% endblock %}
+{% block content %}
+
+<h1 class="mb-4">
+    Cadastrar Produtos <br/>
+</h1>
+
+<h5 class="text-muted">Preencha os campos abaixo para cadastrar um novo produto!</h5>
+
+{% include "produtos/form_cadastrar.html" %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="custom-alert show" >
+        <span class="fas fa-exclamation-circle"></span>
+        <span class="msg">{{ message }}</span>
+        <span class="close-btn">
+        <span class="fas fa-times"></span>
+        </span>
+    </div>
+  {% endfor %}
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'produtos/js/produto.js' %}"></script>
+{% endblock %}

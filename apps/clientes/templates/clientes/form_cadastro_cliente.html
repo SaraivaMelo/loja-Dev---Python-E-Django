@@ -1,0 +1,93 @@
+{% if user_form.errors or address_form.errors or profile_form.errors %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for field in user_form %}
+        {% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for field in address_form %}
+        {% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for field in profile_form %}
+        {% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+<form class="mt-4" method="POST" action="{% url 'clientes:cadastro' %}">
+    {% csrf_token %}
+
+    <div class="row mt-4">
+      <div class="col">
+        <label for="first_name">Nome</label>
+        {{ user_form.first_name }}
+      </div>
+      <div class="col">
+        <label for="last_name">Sobrenome</label>
+        {{ user_form.last_name }}
+      </div>
+      <div class="col">
+        <label for="phone">Telefone</label>
+        {{ profile_form.phone }}
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col">
+        <label for="email">Email</label>
+        {{ user_form.email }}
+      </div>
+      <div class="col">
+        <label for="password1">Senha</label>
+        {{ user_form.password1 }}
+      </div>
+      <div class="col">
+        <label for="password2">Confirme a senha</label>
+        {{ user_form.password2 }}
+      </div>
+    </div>
+
+   
+    <div class="row mt-4">
+      <div class="col">
+        <label for="cep">CEP</label>
+        {{ address_form.cep }}
+      </div>
+      <div class="col">
+        <label for="street">Logradouro</label>
+        {{ address_form.street }}
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col">
+        <label for="number">Número</label>
+        {{ address_form.number }}
+      </div>
+      <div class="col">
+        <label for="neighborhood">Bairro</label>
+        {{ address_form.neighborhood }}
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col">
+        <label for="city">Cidade</label>
+        {{ address_form.city }}
+      </div>
+      <div class="col">
+        <label for="state">Estado</label>
+        {{ address_form.state }}
+      </div>
+    </div>
+
+    <div class="col-auto mt-4">
+      <button type="submit" class="btn btn-primary mb-2">Enviar</button>
+    </div>
+</form>

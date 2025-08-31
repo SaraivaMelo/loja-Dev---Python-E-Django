@@ -1,0 +1,68 @@
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Detalhes da Compra</h5>
+        <span class="material-icons btn-close" data-bs-dismiss="modal" aria-label="Close">cancel</span>
+      </div>
+      <div class="modal-body">
+        <div class="container d-flex justify-content-between">
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">receipt</span>
+                NF
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">today</span>
+                Data
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">description</span>
+                Descrição do item
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">add_shopping_cart</span>
+                Quantidade de itens
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">attach_money</span>
+                Valor do item
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">paid</span>
+                Valor Pago
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">today</span> 
+                Forma de Pagamento
+            </div>
+            <div class="data_item d-flex flex-row align-items-center">
+                <span class="material-icons me-1">expand_circle_down</span>
+                Detalhes
+            </div>
+            </div>  
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% for item in itens %}
+  <div class="container d-flex justify-content-between border-bottom py-2">
+    <div class="data_item d-flex flex-row align-items-center">
+      <p class="mb-0">{{ item.nf }}</p>
+    </div>
+    <div class="data_item d-flex flex-row align-items-center">
+      <p class="mb-0">{{ item.data|date:"d/m/Y" }}</p>
+    </div>
+    <div class="data_item d-flex flex-row align-items-center">
+      <p class="mb-0">R$ {{ item.valor_total }}</p>
+    </div>
+    <div class="data_item d-flex flex-row align-items-center">
+      <p class="mb-0">R$ {{ item.valor_pago }}</p>
+    </div>
+    <div class="data_item d-flex flex-row align-items-center">
+      <p class="mb-0">{{ item.forma_pagamento }}</p>
+    </div>
+  </div>
+{% endfor %}

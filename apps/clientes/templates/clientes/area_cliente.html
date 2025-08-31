@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="flex-grow-1 p-4">
+    <h1>Olá, {{ user.first_name }}</h1>
+    <p>Este é o conteúdo principal da página.</p>
+</div>
+
+<div class="container">
+  <nav>
+    <button class="btn btn-outline-secondary active" data-target="cadastro">Meu Cadastro</button>
+    <button class="btn btn-outline-secondary" data-target="compras">Minhas Compras</button>
+  </nav>
+
+  <div class="content-area">
+    <div id="cadastro" class="tab-content active">
+        {% include "clientes/dados_content.html" %}
+    </div>
+    <div id="compras" class="tab-content">
+        {% include "clientes/compras_content.html" %}
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_css %}
+       <link rel="stylesheet" href="{% static 'clientes/css/area_cliente.css' %}">
+{% endblock %}
+
+
+{% block extra_js %}
+    <script src="{% static 'clientes/js/script.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% load static %}
+<div class="container d-flex justify-content-around flex-wrap ">
+    {% if produtos %}
+        {% for produto in produtos %}
+            <div class="card mb-4" style="width: 20rem;">
+                {% if produto.image %}
+                    <img src="{{ produto.image.url }}" class="card-img-top img-front-listar"  alt="Imagem de {{ produto.name }}">
+                {% else %}
+                    <img src="{% static 'img/sem-imagem.png' %}" class="card-img-top" alt="Sem imagem">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ produto.name }}</h5>
+                    <p class="card-text produto-txt">{{ produto.description }}</p>
+                    <p class="card-text"><strong>R$ {{ produto.price }}</strong></p>
+                    <p class="card-text produto-txt">Categoria: {{ produto.categorie.name }}</p>
+                    <a href="{% url 'produtos:comprar_produto' produto.id %}" class="btn btn-primary">Comprar</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Nenhum produto cadastrado!
+        </div>
+    {% endif %}
+</div>

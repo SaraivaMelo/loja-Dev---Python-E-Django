@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Resumo da compra</h1>
+<div class="d-flex  flex-column">
+    <div>
+        {% include "produtos/table_finalizar_compra.html" %}
+    </div>
+    <div>
+        {% include "produtos/pagamento_check.html" %}
+    </div>
+</div>
+    <form method="post" action="{% url 'produtos:pagamento' %}">
+        {% csrf_token %} 
+        <input type="hidden" name="desconto_aplicado" id="desconto_aplicado_hidden">
+        <input type="hidden" name="total_com_desconto" id="total_com_desconto">
+        <button type="submit" class="btn btn-success mt-3">Finalizar</button>
+    </form>
+{% endblock %}

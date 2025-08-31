@@ -1,0 +1,32 @@
+  {% load static %}
+<div class="container">
+    <div class="confirmation_pg">
+        <div class="fw-bold">
+            Sua pontuação atual: <span class="text-success fw-bold"> {{ pontos }}  </span> pontos
+        </div>
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" id="cupom" placeholder="Inserir cupom?">
+            </div>
+            <div class="col">
+                <button class="btn btn-success" id="btn_cupom">Aplicar</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Total a pagar: <span class="text-danger fw-bold">R$ {{ total }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="description_pg" id="total_pg">Total a pagar: <span class="text-danger">R$ {{ total }}</span></div>
+    <div class="description_pg" id="desconto_aplicado">Desconto: <span class="text-success">R$0,00</span></div>
+    <div class="description_pg ">Valor Total: <span class="text-primary">R$0,00</span></div>
+</div>
+
+{% block extra_js %}
+<script src="{% static 'produtos/js/produto.js' %}"></script>
+
+{% endblock %}

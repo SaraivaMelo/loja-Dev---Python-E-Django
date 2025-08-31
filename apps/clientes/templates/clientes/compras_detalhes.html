@@ -1,0 +1,67 @@
+<!-- Cabeçalho -->
+<div class="container">
+  <div class="row fw-bold border-bottom py-2">
+    <div class="col-2 d-flex align-items-center">
+      <span class="material-icons me-1">receipt</span> NF
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span class="material-icons me-1">today</span> Data
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span class="material-icons me-1">production_quantity_limits</span> Quantidade
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      <span class="material-icons me-1">paid</span> Valor Pago
+    </div>
+    <div class="col-3 d-flex align-items-center">
+      <span class="material-icons me-1">credit_card</span> Forma de Pagamento
+    </div>
+    <div class="col-1 d-flex align-items-center">
+      <span class="material-icons me-1">expand_circle_down</span> Detalhes
+    </div>
+  </div>
+
+{% for item in itens_venda %}
+  <div class="row border-bottom py-2">
+    <div class="col-2 d-flex align-items-center">
+      {{ item.venda.nf }}
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      {{ item.venda.data|date:"d/m/Y" }}
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      {{ item.quantidade }}
+    </div>
+    <div class="col-2 d-flex align-items-center">
+      R$ {{ item.venda.total }}
+    </div>
+    <div class="col-3 d-flex align-items-center">
+      {{ item.venda.forma_pagamento }}
+    </div>
+    <div class="col-1 d-flex align-items-center">
+      <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#modal-venda-{{ item.id }}">
+        <span class="material-icons">visibility</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Modal de detalhes da venda -->
+  <div class="modal fade" id="modal-venda-{{ item.id }}" tabindex="-1" aria-labelledby="modalLabel-{{ item.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel-{{ item.id }}">Detalhes da Venda - NF {{ item.venda.nf }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Data:</strong> {{ item.venda.data|date:"d/m/Y H:i" }}</p>
+          <p><strong>Produto:</strong> {{ item.produto.name }}</p>
+          <p><strong>Quantidade:</strong> {{ item.quantidade }}</p>
+          <p><strong>Preço Unitário:</strong> R$ {{ item.preco_unitario }}</p>
+          <p><strong>Total da Venda:</strong> R$ {{ item.venda.total }}</p>
+          <p><strong>Forma de Pagamento:</strong> {{ item.venda.forma_pagamento }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}

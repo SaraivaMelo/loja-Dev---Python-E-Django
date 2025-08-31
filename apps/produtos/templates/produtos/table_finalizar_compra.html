@@ -1,0 +1,49 @@
+<div class="container d-flex justify-content-between mt-3">
+  <div class="data_item d-flex flex-row align-items-center">
+    <span class="material-icons me-1">sell</span>
+    Produto
+  </div>
+  <div class="data_item d-flex flex-row align-items-center">
+    <span class="material-icons me-1">add_shopping_cart</span>
+    Quantidade
+  </div>
+  <div class="data_item d-flex flex-row align-items-center">
+    <span class="material-icons me-1">attach_money</span>
+    Valor Total
+  </div>
+  <div class="data_item d-flex flex-row align-items-center">
+    <span class="material-icons me-1">delete</span>
+    Excluir
+  </div>
+</div>  
+
+<!-- Prenchimento dos dados -->  
+{% for produto in produtos %}
+<div class="container d-flex justify-content-between mt-2 border-bottom py-2">
+  <!-- Nome do Produto -->
+  <div class="data_item d-flex flex-row align-items-center">
+    {{ produto.produto.name }}
+  </div>
+
+  <!-- Quantidade (assumindo 1 unidade por produto por enquanto) -->
+  <div class="data_item d-flex flex-row align-items-center">
+    {{produto.quantidade}}
+  </div>
+
+  <!-- Valor -->
+  <div class="data_item d-flex flex-row align-items-center">
+    {{ produto.subtotal }}
+  </div>
+
+  <!-- Botão de excluir (pode ser um link ou botão) -->
+    <div class="data_item d-flex flex-row align-items-center">
+      <form action="{% url 'produtos:kart_remover' produto.produto.id %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">x</button>
+      </form>
+    </div>
+</div>
+
+{% empty %}
+<p>Nenhum produto encontrado.</p>
+{% endfor %}
