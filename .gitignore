@@ -1,2 +1,7 @@
 .env
 passo_a_passo
+venv/
+*.pyc
+__pycache__/
+db.sqlite3
+
