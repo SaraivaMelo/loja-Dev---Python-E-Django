@@ -150,25 +150,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// Finalizar compra e realizar pagamento 
 document.addEventListener('DOMContentLoaded', function () {
-  // Elementos
   const btnCupom = document.getElementById('btn_cupom');
   const cupomInput = document.getElementById('cupom');
   const totalPgElement = document.getElementById('total_pg');
   const descontoElement = document.querySelector('.description_pg .text-success');
   const valorTotalElement = document.querySelector('.description_pg .text-primary');
-  const form = document.querySelector('form');
-
-  // Inputs ocultos para poder mandar a tela de pagar
   const descontoHidden = document.getElementById('desconto_aplicado_hidden');
   const totalHidden = document.getElementById('total_com_desconto');
+  const form = document.querySelector('form');
 
-  // Função de cálculo para aplicar descontos
+  // Função para limpar e garantir valor numérico
+  function parseMoneyToFloat(str) {
+    if (!str) return 0;
+    return parseFloat(str.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+  }
+
+  // Inicializa valores no carregamento
+  function inicializarValores() {
+    const totalText = totalPgElement?.innerText || '0';
+    const totalNumber = parseMoneyToFloat(totalText);
+
+    descontoHidden.value = "0.00";
+    totalHidden.value = totalNumber.toFixed(2);
+    descontoElement.innerText = "R$ 0.00";
+    valorTotalElement.innerText = `R$ ${totalNumber.toFixed(2)}`;
+  }
+
   function aplicarCupom() {
-    const cupom = cupomInput.value.trim().toUpperCase();
-    const totalText = totalPgElement.innerText;
-    const totalNumber = parseFloat(totalText.replace(/[^\d,.-]/g, '').replace(',', '.'));
+    const cupom = cupomInput?.value.trim().toUpperCase() || "";
+    const totalText = totalPgElement?.innerText || '0';
+    const totalNumber = parseMoneyToFloat(totalText);
 
     let desconto = 0;
 
@@ -188,21 +200,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const novoTotal = totalNumber - desconto;
 
-    // Atualizar a tela
     descontoElement.innerText = `R$ ${desconto.toFixed(2)}`;
     valorTotalElement.innerText = `R$ ${novoTotal.toFixed(2)}`;
 
-    // Atualizar inputs ocultos 
-      descontoHidden.value = desconto.toFixed(2);
-      totalHidden.value = novoTotal.toFixed(2);
+    descontoHidden.value = desconto.toFixed(2);
+    totalHidden.value = novoTotal.toFixed(2);
+
+    console.log('Cupom:', cupom, 'Desconto:', descontoHidden.value, 'Total com desconto:', totalHidden.value);
   }
 
-  // Botão aplicar cupom
-  btnCupom.addEventListener('click', aplicarCupom);
+  inicializarValores();
 
-  // Quando o formulário for enviado (clicar em "Finalizar")
-  form.addEventListener('submit', aplicarCupom);
+  btnCupom?.addEventListener('click', function(e) {
+    e.preventDefault();
+    aplicarCupom();
+  });
+
+  form?.addEventListener('submit', function(e) {
+    aplicarCupom();  // garante que campos ocultos atualizados antes do backend receber
+  });
 });
+
 
 document.querySelectorAll('input[name="flexRadioDefault"]').forEach(function (radio) {
   radio.addEventListener('change', function () {

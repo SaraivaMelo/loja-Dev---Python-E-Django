@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+from decimal import Decimal, InvalidOperation
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from .models import Categoria, Produto
@@ -177,82 +179,124 @@ def finalizar_compra(request):
 
 def pagamento(request):
     if request.method == 'POST':
-        
         carrinho = request.session.get('carrinho', [])
         cliente = CustomerProfile.objects.get(user=request.user)
 
-        # Dados que vêm do formulário
-        desconto = request.POST.get('desconto_aplicado')
-        total_com_desconto = request.POST.get('total_com_desconto')
+        if not carrinho:
+            messages.error(request, "Seu carrinho está vazio.")
+            return redirect('produtos:finalizar')
 
-        # Salvar na sessão (opcional, caso precise usar depois)
-        request.session['desconto'] = desconto
-        request.session['total_com_desconto'] = total_com_desconto
+        # Pegar dados enviados do frontend, só para referência
+        desconto_str = request.POST.get('desconto_aplicado', '0').strip()
+        desconto_str = desconto_str.replace(',', '.')
+        try:
+            desconto_fornecido = Decimal(desconto_str)
+        except ValueError:
+            desconto_fornecido = 0
+
+        # Contar quantidades dos produtos no carrinho
+        count = Counter(carrinho)
+
+        # Calcular total bruto (sem desconto)
+        total_bruto = 0
+        for produto_id, quantidade in count.items():
+            try:
+                produto = Produto.objects.get(id=produto_id)
+                total_bruto += produto.price * quantidade
+            except Produto.DoesNotExist:
+                messages.error(request, f"Produto com ID {produto_id} não encontrado.")
+                return redirect('produtos:finalizar')
+
+        # evita desconto maior que o total
+        desconto = min(desconto_fornecido, total_bruto)  
+        total_com_desconto = total_bruto - desconto
+
+        # Atualizar valores na sessão
+        request.session['desconto'] = float(desconto)
+        request.session['total_com_desconto'] = float(total_com_desconto)
 
         context = {
             'desconto': desconto,
             'total_com_desconto': total_com_desconto,
-            'pontos': cliente.points
+            'pontos': cliente.points,
+            'carrinho': count,
+            'total_bruto': total_bruto,
         }
 
         return render(request, 'produtos/pagamento_concluir.html', context)
 
     return redirect('produtos:finalizar')
 
+#Concluir o pagamento 
 def concluir_pagamento(request):
-    if request.method == 'POST':
-        forma_pagamento = request.POST.get('forma_pagamento')
-        cliente = CustomerProfile.objects.get(user=request.user)
+    if request.method != 'POST':
+        return redirect('produtos:finalizar')
 
-        total_com_desconto = float(request.session.get('total_com_desconto', 0))
-        pontos_cliente = cliente.points or 0
+    cliente = CustomerProfile.objects.get(user=request.user)
+    forma_pagamento = request.POST.get('forma_pagamento')
+    valor_raw = request.session.get('total_com_desconto')
 
-        # Atualizar pontuação na base se o pagamento for com pontos 
-        if forma_pagamento == 'pontos':
-            # Cliente paga com pontos, então subtrai
-            cliente.points -= int(total_com_desconto)
-        else:
-            # Cliente paga normal, então acumula pontos
-            cliente.points += int(total_com_desconto)
-        
-        #Criar os itens para a tabela vendas
-        venda = Venda(
-            cliente=request.user,
-            forma_pagamento=forma_pagamento,
-            total=total_com_desconto
-        )
-        venda.save()
-        
-        cliente.save()
-        carrinho_ids = request.session.get('carrinho', [])
-        count = Counter(carrinho_ids)
+    # Valida o valor da sessão
+    try:
+        total_com_desconto = float(valor_raw)
+    except (TypeError, ValueError):
+        messages.error(request, "Erro ao processar o pagamento: valor inválido.")
+        return redirect('produtos:finalizar')
 
-        #Cria os itens na tabela item_venda
-        for produto_id, quantidade in count.items():
-            try:
+    # Validação extra se a forma de pagamento for pontos
+    if forma_pagamento == 'pontos':
+        if cliente.points < total_com_desconto:
+            messages.error(request, "Você não tem pontos suficientes para essa compra.")
+            return redirect('produtos:finalizar')
+        cliente.points -= int(total_com_desconto)
+    else:
+        cliente.points += int(total_com_desconto)
+
+    carrinho_ids = request.session.get('carrinho', [])
+    count = Counter(carrinho_ids)
+
+    # Evitar erro caso o carrinho esteja vazio
+    if not count:
+        messages.error(request, "Seu carrinho está vazio.")
+        return redirect('produtos:finalizar')
+
+    try:
+        with transaction.atomic():
+            # Criar a venda
+            venda = Venda.objects.create(
+                cliente=request.user,
+                forma_pagamento=forma_pagamento,
+                total=total_com_desconto
+            )
+
+            # Atualizar estoque e criar itens da venda
+            for produto_id, quantidade in count.items():
                 produto = Produto.objects.get(id=produto_id)
-                if produto.qtd >= quantidade:
-                    produto.qtd -= quantidade
-                    produto.save()
-                else:
-                    messages.error(request, f'Estoque insuficiente para {produto.name}.')
+                if produto.qtd < quantidade:
+                    messages.error(request, f"Estoque insuficiente para {produto.name}.")
                     return redirect('produtos:finalizar')
-                
+
+                produto.qtd -= quantidade
+                produto.save()
+
                 ItemVenda.objects.create(
                     venda=venda,
                     produto=produto,
                     quantidade=quantidade,
                     preco_unitario=produto.price
                 )
-            except Produto.DoesNotExist:
-                print(f"Produto com ID {produto_id} não encontrado. Ignorado.")
 
-         # Limpar dados de pagamento da sessão 
-        request.session.pop('desconto', None)
-        request.session.pop('total_com_desconto', None)
-        request.session.pop('carrinho', None)
-        
-        messages.success(request, 'Compra finalizada com sucesso!')
-        return redirect('home')
+            cliente.points = max(cliente.points, 0)  # nunca negativo
+            cliente.save()
 
-    return redirect('produtos:finalizar')
+            # Limpar dados da sessão
+            request.session.pop('desconto', None)
+            request.session.pop('total_com_desconto', None)
+            request.session.pop('carrinho', None)
+
+            messages.success(request, "Compra finalizada com sucesso!")
+            return redirect('home')
+
+    except Exception as e:
+        messages.error(request, f"Erro ao concluir pagamento: {str(e)}")
+        return redirect('produtos:finalizar')

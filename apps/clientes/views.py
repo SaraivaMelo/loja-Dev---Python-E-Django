@@ -91,8 +91,10 @@ def login_cliente(request):
 
 
 def logout_cliente(request):
-    logout(request)  # Desloga o usuário
-    return redirect('clientes:login')  # Redireciona para a página de login
+    logout(request)
+    messages.success(request, "Logout realizado com sucesso.")  # <-- Use success, não error
+    return redirect('clientes:login')
+
 
 @login_required(login_url='clientes:login')
 def atualiza_dados(request):
